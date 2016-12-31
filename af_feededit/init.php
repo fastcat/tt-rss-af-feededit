@@ -60,6 +60,7 @@ class Af_Feededit extends Plugin implements IHandler
         }
 
         foreach ($data as $urlpart=>$config) {
+            // TODO: allow $config to be an array of configs
             if (strpos($article['feed_url'], $urlpart) === false) {
                 continue;
             }
