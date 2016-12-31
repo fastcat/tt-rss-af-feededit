@@ -59,6 +59,11 @@ class Af_Feededit extends Plugin implements IHandler
             return $article;
         }
 
+        if (strpos($article['plugin_data'], "feededit,$owner_uid:") !== false) {
+            // do not process an article more than once
+            return $article;
+        }
+
         foreach ($data as $urlpart=>$config) {
             // TODO: allow $config to be an array of configs
             if (strpos($article['feed_url'], $urlpart) === false) {
@@ -107,6 +112,7 @@ class Af_Feededit extends Plugin implements IHandler
             
             // save edited value back
             $article[$config['field']] = $field_value;
+            $article['plugin_data'] = "feededit,$owner_uid:" . $article['plugin_data'];
             
             // only process the first matching config entry
             break;
