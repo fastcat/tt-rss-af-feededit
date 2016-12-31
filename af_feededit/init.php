@@ -85,7 +85,7 @@ class Af_Feededit extends Plugin implements IHandler
                             continue;
                         }
                     }
-                    if (!isset($config['search'] or !isset($config['replace'])) {
+                    if (!isset($config['search']) or !isset($config['replace'])) {
                         // Missing settings
                         continue;
                     }
