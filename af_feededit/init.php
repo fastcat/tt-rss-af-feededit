@@ -50,29 +50,36 @@ class Af_Feededit extends Plugin implements IHandler
 
     function hook_article_filter($article)
     {
+        _debug('feededit: processing ' . $article['feed_url'] . ' :: ' . $article['title']);
         $json_conf = $this->host->get($this, 'json_conf');
         $owner_uid = $article['owner_uid'];
         $data = json_decode($json_conf, true);
 
         if (!is_array($data)) {
+            _debug('... not configured');
             // no valid JSON or no configuration at all
             return $article;
         }
 
         if (strpos($article['plugin_data'], "feededit,$owner_uid:") !== false) {
+            _debug('... already processed');
             // do not process an article more than once
             return $article;
         }
 
         foreach ($data as $urlpart=>$config) {
+            _debug('... checking config for ' . $urlpart);
             // TODO: allow $config to be an array of configs
-            if (strpos($article['feed_url'], $urlpart) === false) {
+            if (strpos($article['feed']['fetch_url'], $urlpart) === false) {
+                _debug('... ... not applicable');
                 continue;
             }
             if (!isset($config['field'])) {
+                _debug('... ... no field to process');
                 continue;
             }
             if (!isset($article[$config['field']])) {
+                _debug('... ... article has no field ' . $config['field']);
                 continue;
             }
             $field_value = $article[$config['field']];
@@ -82,10 +89,12 @@ class Af_Feededit extends Plugin implements IHandler
                     // optional check regex before running the search & replace
                     if (isset($config['check'])) {
                         if (!preg_match($config['check'], $field_value)) {
+                            _debug('... ... check regex does not match');
                             continue;
                         }
                     }
                     if (!isset($config['search']) or !isset($config['replace'])) {
+                        _debug('... ... search or replace regex missing');
                         // Missing settings
                         continue;
                     }
@@ -97,9 +106,11 @@ class Af_Feededit extends Plugin implements IHandler
                     }
                     $replaced = preg_replace($config['search'], $config['replace'], $field_value);
                     if ($replaced == NULL) {
+                        _debug('... ... s/r regex had error');
                         // error
                         continue;
                     }
+                    _debug('... ... replaced \'' . $field_value . '\' with \'' . $replaced . '\'');
                     $field_value = $replaced;
                     break;
                 
