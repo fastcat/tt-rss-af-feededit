@@ -90,13 +90,13 @@ class Af_Feededit extends Plugin implements IHandler
                     if (isset($config['check'])) {
                         if (!preg_match($config['check'], $field_value)) {
                             _debug('... ... check regex does not match');
-                            continue;
+                            break;
                         }
                     }
                     if (!isset($config['search']) or !isset($config['replace'])) {
                         _debug('... ... search or replace regex missing');
                         // Missing settings
-                        continue;
+                        break;
                     }
                     // optional replace limit
                     if (isset($config['limit'])) {
@@ -108,7 +108,7 @@ class Af_Feededit extends Plugin implements IHandler
                     if ($replaced == NULL) {
                         _debug('... ... s/r regex had error');
                         // error
-                        continue;
+                        break;
                     }
                     _debug('... ... replaced \'' . $field_value . '\' with \'' . $replaced . '\'');
                     $field_value = $replaced;
@@ -118,7 +118,7 @@ class Af_Feededit extends Plugin implements IHandler
 
                 default:
                     // unknown type or invalid config
-                    continue;
+                    break;
             }
             
             // save edited value back
